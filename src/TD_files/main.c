@@ -2,129 +2,143 @@
 #include <stdlib.h>
 
 
-typedef struct s_queue {
+typedef struct s_cell {
     int value;
-    struct s_queue *next;
+    struct s_cell *next;
+} Cell;
+
+typedef struct s_queue {
+    struct s_cell *head;
+    struct s_cell *tail;
+    int size;
 } Queue;
 
 
 Queue *queueCreate(void) {
-    return NULL;
+    Queue *q = malloc(sizeof(Queue));
+    if (q == NULL) return NULL;
+
+    q->head = NULL;
+    q->tail = NULL;
+    q->size = 0;
 }
 
-void queuePush(Queue **q, int v) {
-    Queue *new_cell = (Queue *)malloc(sizeof(Queue));
-    new_cell->value = v;
-    new_cell->next = NULL;
-
+void queueDelete(Queue **q) {
     if (*q == NULL) {
-        *q = new_cell;
         return;
     }
 
-    Queue *curr = *q;
-    while (curr->next != NULL) {
+    Cell *curr = (*q)->head;
+    Cell *prev;
+
+    while (curr != NULL) {
+        prev = curr;
         curr = curr->next;
+        free(prev);
+        prev = NULL;
     }
 
-    curr->next = new_cell;
+    free(*q);
+    *q = NULL;
 }
 
-Queue *queueRemove(Queue *q) {
-    if (q == NULL) {
-        return NULL;
+void queuePush(Queue *q, int v) {
+    Cell *new_cell = malloc(sizeof(Cell));
+    new_cell->value = v;
+    new_cell-> next = NULL;
+
+    if (q->size == 0) {
+        q->head = new_cell;
+    } else {
+        q->tail->next = new_cell;
     }
 
-    Queue *n = q->next;
-    free(q);
-    return n;
+    q->tail = new_cell;
+    q->size++;
 }
 
-void printTail(Queue *q) {
-    if (q == NULL) {
+void queuePop(Queue *q) {
+    if (q->head == NULL) {
         return;
     }
 
-    printf("Tail : %d\n", q->value);
+    Cell *toRemove = q->head;
+    q->head = q->head->next;
+    free(toRemove);
+    toRemove = NULL;
+
+    q->size--;
 }
 
-void printHead(Queue *q) {
-    if (q == NULL) {
+int queueSize(Queue *q) {
+    return q->size;
+}
+
+int queueEmpty(Queue *q) {
+    return q->size = 0;
+}
+
+void queuePrintHead(Queue *q) {
+    if (q->head == NULL) {
         return;
     }
 
-    Queue *p = q;
-    while (p->next != NULL) {
-        p = p->next;
+    printf("Head : %d\n", q->head->value);
+}
+
+void queuePrintTail(Queue *q) {
+    if (q->tail == NULL) {
+        return;
     }
-    printf("Head : %d\n", p->value);
+
+    printf("Tail", q->tail->value);
 }
 
 void printQueue(Queue *q) {
-    if (q == NULL) {
+    if (q->size == 0) {
         printf("File vide\n");
         return;
     }
 
-    Queue *p = q;
-    while (p != NULL) {
-        printf("%d ", p->value);
-        p = p->next;
+    for (Cell *curr = q->head; curr != NULL; curr = curr->next) {
+        printf("%d ", curr->value);
     }
     
     printf("\n");
 }
 
-int queueSize(Queue *q) {
-    if (q == NULL) {
-        return 0;
-    }
-
-    int i = 0;
-    Queue *p = q;
-    while (p != NULL) {
-        p = p->next;
-        i++;
-    }
-
-    return i;
-}
-
-int queueEmpty(Queue *q) {
-    return queueSize(q) == 0;
-}
-
 int main(void) {
-
     Queue *q = queueCreate();
 
     printf("--- Ajout ---\n");
 
-    queuePush(&q, 1);
+    queuePush(q, 1);
     printQueue(q);
-    queuePush(&q, 2);
+    queuePush(q, 2);
     printQueue(q);
-    queuePush(&q, 3);
+    queuePush(q, 3);
     printQueue(q);
-    queuePush(&q, 4);
+    queuePush(q, 4);
     printQueue(q);
 
-    printTail(q);
-    printHead(q);
+    queuePrintHead(q);
+    queuePrintTail(q);
 
     printf("size : %d\n", queueSize(q));
 
     printf("---Suppression ---\n");
 
     printQueue(q);
-    q = queueRemove(q);
+    queuePop(q);
     printQueue(q);
-    q = queueRemove(q);
+    queuePop(q);
     printQueue(q);
-    q = queueRemove(q);
+    queuePop(q);
     printQueue(q);
-    q = queueRemove(q);
+    queuePop(q);
     printQueue(q);
+
+    queueDelete(&q);
 
     return 0;
 }
