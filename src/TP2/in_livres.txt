@@ -1,0 +1,10 @@
+Hugo 1862 Miserables
+Hugo 1831 Notre-Dame
+Camus 1942 Etranger
+Camus 1947 Peste
+Orwell 1949 Nineteen-Eighty-Four
+Orwell 1945 Animal-Farm
+Tolkien 1954 Fellowship
+Tolkien 1954 Towers
+Austen 1813 Pride
+Austen 1813 Emma
